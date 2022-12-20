@@ -5,6 +5,7 @@ const bombCount = document.getElementById("bomb-count");
 const smiley = document.getElementById("smiley");
 const countDown = document.getElementById("count-down");
 const startGame = document.getElementById("start-game");
+const pauseGame = document.getElementById("pause-game");
 
 const gameDifficulty = {
   easy: {
@@ -45,19 +46,6 @@ const gameDifficulty = {
   },
 };
 
-// get game parameters: difficulty level and timer setup
-const difficulty = document.querySelector(
-  "input[name='difficulty']:checked"
-).value;
-
-const setTimer = () => {
-  if (document.getElementById("timer").checked) {
-    return "Y";
-  } else {
-    return "N";
-  }
-};
-
 // game parameters declaration
 let rowNum;
 let colNum;
@@ -66,12 +54,18 @@ let boardWidth;
 let cellWidth;
 let borderWidth;
 let timeInSecond;
+let gameInterval;
 
 // start game
 window.addEventListener("DOMContentLoaded", () => {
   // listen to start game button
   startGame.addEventListener("click", (e) => {
     e.preventDefault();
+
+    // get game parameters: difficulty level and timer setup
+    const difficulty = document.querySelector(
+      "input[name='difficulty']:checked"
+    ).value;
 
     rowNum = gameDifficulty[difficulty].row;
     colNum = gameDifficulty[difficulty].col;
@@ -80,17 +74,28 @@ window.addEventListener("DOMContentLoaded", () => {
     cellWidth = gameDifficulty[difficulty].cellWidth;
     borderWidth = gameDifficulty[difficulty].borderWidth;
 
-    if (setTimer() === "Y") {
+    if (document.getElementById("timer").checked) {
       timeInSecond = gameDifficulty[difficulty].timeInSecond;
     } else {
       timeInSecond = 0;
     }
 
+    // reset game
+    board.innerHTML = "";
+    smiley.innerHTML = "<i class='fa-regular fa-face-smile fa-2x'></i>";
+
     // game setup
-    setInterval(updateTimer, 1000);
+    gameInterval = setInterval(updateTimer, 1000);
     bombCount.innerHTML = ("000" + numOfBomb).substr(-3);
     const gameArray = createGameArray();
     createBoard(gameArray);
+
+    startGame.disabled = true;
+
+    pauseGame.addEventListener("click", (e) => {
+      stopTimer();
+      //e.stopPropagation();
+    });
   });
 });
 
@@ -99,11 +104,11 @@ window.addEventListener("DOMContentLoaded", () => {
 // (a) Timer's on: countdown from allocated game time
 // (b) Timer's off: count up to time taken to complete game
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function updateTimer(char) {
+function updateTimer() {
   let minutes = ("00" + Math.floor(timeInSecond / 60)).substr(-2);
   let seconds = ("00" + (timeInSecond % 60)).substr(-2);
 
-  if (setTimer() === "Y") {
+  if (document.getElementById("timer").checked) {
     if (timeInSecond >= 0) {
       timeInSecond--;
     }
@@ -123,7 +128,6 @@ function createGameArray() {
   const normalArray = new Array(rowNum * colNum - numOfBomb).fill("normal");
   const gameArray = normalArray.concat(bombArray);
   const shuffledArray = shuffle(gameArray);
-  console.log(shuffledArray);
   return shuffledArray;
 }
 
@@ -163,6 +167,7 @@ function createBoard(gameArray) {
 
       // (a) add "left-click" event listener to cell
       cellDiv.addEventListener("click", (e) => {
+        e.preventDefault();
         cellClick(e.target);
       });
 
@@ -219,13 +224,18 @@ function getAdjacentCells(div) {
 
 /////// left-click event listener ///////
 function cellClick(div) {
-  if (div.classList.contains("bomb")) return;
-  else if (div.dataset.status !== "hidden") return;
+  if (div.classList.contains("bomb")) {
+    // 1. show bomb
+    div.innerHTML = "<i class='fa-solid fa-bomb fa-2x'></i>";
+    div.style.backgroundColor = "red";
+    // 2. end game --> reveal all cells, disable all cell click events
+    div.dataset.status = "revealed";
+    endGame(div);
+  } else if (div.dataset.status !== "hidden") return;
   else {
     div.dataset.status = "revealed";
     // calculate number of bombs in adjacent cells
     const adjacentCells = getAdjacentCells(div);
-    console.log(adjacentCells);
     let surroundingBombs = 0;
     for (let cell of adjacentCells) {
       if (cell.classList.contains("bomb")) {
@@ -262,4 +272,35 @@ function cellFlag(e) {
   // decrement bombcount by number of flags established
   let newBombCount = parseInt(bombCount.innerHTML) - 1;
   bombCount.innerHTML = ("000" + newBombCount).substr(-3);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5. End game
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function endGame(div) {
+  // 1. display a crying face in smiley
+  smiley.innerHTML = "<i class='fa-regular fa-face-sad-tear fa-2x'></i>";
+  smiley.style.color = "red";
+  // 2. reveal all bomb tiles
+  const hiddenCells = document.querySelectorAll("[data-status='hidden']");
+  for (let cell of hiddenCells) {
+    if (cell.classList.contains("bomb")) {
+      cell.innerHTML = "<i class='fa-solid fa-bomb fa-2x'></i>";
+      cell.style.backgroundColor = "orange";
+    }
+    cell.style["pointer-events"] = "none";
+  }
+  // 3. disable all cell click event
+
+  // 4. stop timer
+  stopTimer();
+  // 5. Enable start game button
+  startGame.disabled = false;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 6. Stop timer
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function stopTimer() {
+  clearInterval(gameInterval);
 }
