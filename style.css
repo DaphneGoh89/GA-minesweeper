@@ -1,0 +1,400 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron&family=Poppins:wght@200;300;400;500;600;700;800;900&family=Press+Start+2P&display=swap");
+
+@font-face {
+  font-family: "digital-clock-font";
+  src: url("./digital-7/digital-7.ttf");
+}
+
+@keyframes transitionIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/********************************************* WINDOW DEFAULT **********************************************/
+*,
+::before,
+::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: 0;
+}
+
+:root {
+  --border-dark-color: lightsteelblue;
+  --border-light-color: aliceblue;
+}
+
+body {
+  background-image: linear-gradient(180deg, black, lightslategray);
+  font-family: "Press Start 2P", helvetica, sans-serif;
+  animation: transitionIn 1s;
+}
+
+.fa-flag {
+  color: red;
+}
+
+fieldset {
+  padding: 20px auto;
+  border-radius: 0.5em;
+}
+
+legend {
+  text-align: center;
+  font-size: smaller;
+}
+
+label {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+/********************************************* TOGGLE **********************************************/
+/*
+Steps to adding a toggle -
+1. add a checkbox input to your form, make the checkbox dissappear.
+2. create an element directly before your label, using the ::label method
+3. create an after element for the label
+*/
+
+/* all checkboxes with toggle class: make sure your checkbox is no longer on the page */
+input[type="checkbox"].toggle {
+  opacity: 0;
+  left: -900px;
+  top: -900px;
+  position: absolute;
+}
+
+input[type="checkbox"].toggle + label {
+  /* change the display so that the toggle can show as the default for label is to display inline */
+  display: flex;
+  /* added such that the label text will be centered vertically */
+  align-items: center;
+  position: relative;
+  /* margin-top: 5px;
+  margin-bottom: 10px; */
+}
+
+input[type="checkbox"].toggle + label::before {
+  content: "";
+  width: 4em;
+  height: 2em;
+  background-color: lightgray;
+  border-radius: 1em;
+  margin-right: 0.7em;
+  transition: 400ms ease-in-out;
+}
+
+input[type="checkbox"].toggle:checked + label::before {
+  background-color: hsl(100, 70%, 90%);
+}
+
+/* round toggle - before the checkbox is checked */
+input[type="checkbox"].toggle + label::after {
+  content: "";
+  width: 1.9em;
+  height: 1.9em;
+  background-color: white;
+  border-radius: 1em;
+  margin-right: 0.25em;
+  position: absolute;
+  left: 0.1em;
+  transition: 400ms ease-in-out;
+}
+
+input[type="checkbox"].toggle:checked + label::after {
+  transform: translateX(100%);
+  background-color: green;
+}
+
+/************************************************** HEADER **************************************************/
+.header {
+  height: 15vh;
+  line-height: 15vh;
+  text-align: center;
+  align-content: center;
+  font-family: "Press Start 2P";
+  font-size: xx-large;
+  text-shadow: 5px 5px lightslategrey;
+  color: azure;
+}
+
+/************************************************** BODY *****************************************************/
+.container {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  justify-content: space-between;
+  height: 85vh;
+}
+
+/************************************************** ASIDE ****************************************************/
+.aside {
+  /* background-color: coral; */
+  font-family: "Orbitron", sans-serif;
+  color: var(--border-light-color);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.game-parameter {
+  width: 80%;
+  padding-top: 50px;
+}
+
+/*=============== GAME PARAMETER:: Select Difficulty ================*/
+.set-difficulty {
+  margin-bottom: 30px;
+}
+
+.radio-container {
+  padding: 10px;
+}
+
+/* input[type="radio"] {
+  display: none;
+} */
+
+input[type="radio"].difficulty + label {
+  cursor: pointer;
+  width: 100%;
+  border: 1px solid green;
+}
+
+input[type="radio"]:checked {
+  color: blue;
+}
+
+/*=============== GAME PARAMETER:: Timer Slider ================*/
+.set-timer {
+  padding: 20px auto;
+  margin-bottom: 10px;
+  /* background-color: grey; */
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50px;
+}
+
+/*=============== GAME PARAMETER:: Start Game Button ================*/
+.game-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-family: "Press Start 2P", sans-serif;
+  font-weight: 900;
+  background-color: lightgray;
+  border-style: outset;
+  border-width: 4px;
+  border-top-color: var(--border-light-color);
+  border-left-color: var(--border-light-color);
+  border-right-color: var(--border-dark-color);
+  border-bottom-color: var(--border-dark-color);
+  border-radius: 1em;
+  cursor: pointer;
+  transition: 0.4s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-button i {
+  margin-right: 20px;
+}
+
+/************************************************* GAME AREA *************************************************/
+.main {
+  /* background-color: aliceblue; */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+}
+
+/*=============== GAME AREA:: TRACKER ================*/
+.game-area {
+  /* width: 70%; */
+  width: 466px;
+  background-color: lightsteelblue;
+  /* border: inset; */
+  border-style: outset;
+  border-width: 8px;
+  border-top-color: var(--border-light-color);
+  border-left-color: var(--border-light-color);
+  border-right-color: var(--border-dark-color);
+  border-bottom-color: var(--border-dark-color);
+  box-sizing: border-box;
+}
+
+.tracker {
+  margin: 20px 10px;
+  border-style: inset;
+  border-width: 5px;
+  border-top-color: var(--border-dark-color);
+  border-left-color: var(--border-dark-color);
+  border-right-color: var(--border-light-color);
+  border-bottom-color: var(--border-light-color);
+  display: grid;
+  grid-template-columns: 30% 20% 30%;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+.bomb-count {
+  background-color: black;
+  color: white;
+  font-family: "digital-clock-font";
+  font-size: xx-large;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px inset grey;
+  padding: 5px;
+}
+
+.smiley {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-shadow: -1px -1px lightslategray; */
+  width: 100%;
+  height: 100%;
+}
+
+.fa-face-smile {
+  color: green;
+}
+
+.count-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: white;
+  font-family: "digital-clock-font";
+  font-size: xx-large;
+  border: 2px inset grey;
+  padding: 5px;
+}
+
+/*=============== GAME AREA:: BOARD ================*/
+.board {
+  /* width: 70%; */
+  margin: 0 10px 20px 10px;
+  background-color: var(--border-dark-color);
+  border: inset;
+  border-width: 5px;
+  border-top-color: var(--border-dark-color);
+  border-left-color: var(--border-dark-color);
+  border-right-color: var(--border-light-color);
+  border-bottom-color: var(--border-light-color);
+  font-size: xx-small;
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; */
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Orbitron", sans-serif;
+  width: 25px;
+  height: 20px;
+  background-color: var(--border-light-color); /*lightgray;*/
+  margin: 0;
+  padding: 0;
+  border: 3px outset lightsteelblue;
+}
+
+.bomb {
+  background-color: orange;
+}
+
+[data-status="revealed"] {
+  background-color: #ddd;
+  border-style: outset;
+  border-width: 2px;
+  border-color: var(--border-dark-color);
+  width: 25px;
+  height: 20px;
+}
+
+[data-status="revealed"].bomb {
+  background-color: #ddd;
+  background-image: url("./images/bomb.png");
+  border-style: outset;
+  border-width: 2px;
+  border-color: var(--border-dark-color);
+  width: 25px;
+  height: 20px;
+}

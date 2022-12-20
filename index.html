@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/9db1d29e34.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="app_2.js" defer></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        <span><i class="fa-solid fa-bomb"></i></span>
+        MINESWEEPER
+        <span><i class="fa-solid fa-bomb"></i></span>
+      </h1>
+    </div>
+    <div class="container">
+      <div class="aside">
+        <!-- <h1>Timer</h1> -->
+        <div class="game-parameter">
+          <form>
+            <!-- Set Difficulty -->
+            <div class="set-difficulty">
+              <fieldset>
+                <legend>Select Difficulty</legend>
+                <div class="radio-container">
+                  <input
+                    type="radio"
+                    id="easy"
+                    name="difficulty"
+                    value="easy"
+                    class="difficulty"
+                  />
+                  <label for="easy">Easy</label>
+                </div>
+                <div class="radio-container">
+                  <input
+                    type="radio"
+                    id="medium"
+                    name="difficulty"
+                    value="medium"
+                    class="difficulty"
+                  />
+                  <label for="medium">Medium</label>
+                </div>
+                <div class="radio-container">
+                  <input
+                    type="radio"
+                    id="hard"
+                    name="difficulty"
+                    value="hard"
+                    class="difficulty"
+                  />
+                  <label for="hard">Hard</label>
+                </div>
+                <div class="radio-container">
+                  <input
+                    type="radio"
+                    id="adventurous"
+                    name="difficulty"
+                    value="adventurous"
+                    class="difficulty"
+                    checked
+                  />
+                  <label for="adventurous">Adventurous</label>
+                </div>
+              </fieldset>
+            </div>
+            <!-- Set Timer -->
+            <div class="set-timer">
+              <fieldset>
+                <legend>Set Timer</legend>
+                <!-- <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label> -->
+                <input type="checkbox" id="timer" class="toggle" checked />
+                <label for="timer">Timer</label>
+              </fieldset>
+            </div>
+            <button id="start-game" class="game-button">
+              <i class="fa-solid fa-2x fa-play"></i> Start Game
+            </button>
+            <button id="pause-game" class="game-button">
+              <i class="fa-solid fa-2x fa-pause"></i>Pause Game
+            </button>
+          </form>
+        </div>
+        <div class="setting"></div>
+      </div>
+      <div class="main">
+        <!-- <h1>Game Grid</h1> -->
+        <div id="game-area" class="game-area">
+          <div class="tracker">
+            <div id="bomb-count" class="bomb-count">---</div>
+            <div id="smiley" class="smiley">
+              <i class="fa-regular fa-2x fa-face-smile"></i>
+            </div>
+            <div id="count-down" class="count-down">--:--</div>
+          </div>
+          <div id="board" class="board">
+            <!-- <div class="row">
+              <div class="grid-cell bomb" data-status="revealed"></div>
+              <div class="grid-cell">2</div>
+              <div class="grid-cell">3</div>
+              <div class="grid-cell" data-status="revealed">4</div>
+              <div class="grid-cell">5</div>
+              <div class="grid-cell">6</div>
+              <div class="grid-cell revealed">7</div>
+              <div class="grid-cell">8</div>
+              <div class="grid-cell">9</div>
+              <div class="grid-cell">10</div>
+            </div>
+            <div class="row">
+              <div class="grid-cell">1</div>
+              <div class="grid-cell">2</div>
+              <div class="grid-cell">3</div>
+              <div class="grid-cell">4</div>
+              <div class="grid-cell">5</div>
+              <div class="grid-cell">6</div>
+              <div class="grid-cell">7</div>
+              <div class="grid-cell">8</div>
+              <div class="grid-cell">9</div>
+              <div class="grid-cell">10</div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
