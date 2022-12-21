@@ -36,8 +36,18 @@ body {
   animation: transitionIn 1s;
 }
 
+iframe {
+  border-style: none;
+}
+
 .fa-flag {
   color: red;
+}
+
+.fa-flag-checkered {
+  padding-left: 5px;
+  padding-right: 10px;
+  padding-top: 10px;
 }
 
 fieldset {
@@ -118,11 +128,16 @@ input[type="checkbox"].toggle:checked + label::after {
   height: 15vh;
   line-height: 15vh;
   text-align: center;
+
   align-content: center;
   font-family: "Press Start 2P";
   font-size: xx-large;
   text-shadow: 5px 5px lightslategrey;
   color: azure;
+}
+
+.header .fa-flag-checkered {
+  color: red;
 }
 
 /************************************************** BODY *****************************************************/
@@ -368,6 +383,7 @@ input:checked + .slider:before {
   justify-content: center;
   align-items: center;
   font-family: "Orbitron", sans-serif;
+  font-weight: bold;
   width: 25px;
   height: 20px;
   background-color: var(--border-light-color); /*lightgray;*/
@@ -377,7 +393,17 @@ input:checked + .slider:before {
 }
 
 .bomb {
+  font-size: large;
   /* background-color: orange; */
+}
+
+.normal {
+  font-size: large;
+  font-weight: 900;
+}
+
+.flagged {
+  background-color: black;
 }
 
 [data-status="revealed"] {

@@ -1,3 +1,7 @@
+//import JSConfetti from "js-confetti";
+
+const JSConfetti = window.JSConfetti;
+
 // game constants
 const gameArea = document.getElementById("game-area");
 const board = document.getElementById("board");
@@ -5,45 +9,56 @@ const bombCount = document.getElementById("bomb-count");
 const smiley = document.getElementById("smiley");
 const countDown = document.getElementById("count-down");
 const startGame = document.getElementById("start-game");
-const pauseGame = document.getElementById("pause-game");
+const resetGame = document.getElementById("reset-game");
 
 const gameDifficulty = {
   easy: {
-    row: 8,
-    col: 8,
-    numOfBomb: 10,
+    row: 10,
+    col: 10,
+    numOfBomb: 15,
     boardWidth: "450px",
     cellWidth: "30px",
     borderWidth: "3px",
     timeInSecond: 179, // time in seconds
   },
   medium: {
-    row: 10,
-    col: 10,
-    numOfBomb: 20,
-    boardWidth: "450px",
-    cellWidth: "30px",
-    borderWidth: "3px",
-    timeInSecond: 299,
-  },
-  hard: {
     row: 16,
     col: 16,
     numOfBomb: 40,
     boardWidth: "450px",
     cellWidth: "30px",
     borderWidth: "3px",
+    timeInSecond: 299,
+  },
+  hard: {
+    row: 20,
+    col: 20,
+    numOfBomb: 70,
+    boardWidth: "550px",
+    cellWidth: "30px",
+    borderWidth: "3px",
     timeInSecond: 359,
   },
   adventurous: {
-    row: 30,
+    row: 20,
     col: 40,
-    numOfBomb: 360,
-    boardWidth: "900px",
+    numOfBomb: 120,
+    boardWidth: "1000px",
     cellWidth: "30px",
     borderWidth: "3px",
     timeInSecond: 599,
   },
+};
+
+const numberColor = {
+  1: "blue",
+  2: "green",
+  3: "red",
+  4: "darkblue",
+  5: "brown",
+  6: "darkcyan",
+  7: "black",
+  8: "grey",
 };
 
 // game parameters declaration
@@ -90,12 +105,15 @@ window.addEventListener("DOMContentLoaded", () => {
     const gameArray = createGameArray();
     createBoard(gameArray);
 
+    // disable change in game parameters
     startGame.disabled = true;
+    document.getElementById("timer").disabled = true;
+    document.getElementsByName("difficulty").disabled = true;
 
-    pauseGame.addEventListener("click", (e) => {
-      stopTimer();
-      //e.stopPropagation();
-    });
+    // pauseGame.addEventListener("click", (e) => {
+    //   stopTimer();
+    //   //e.stopPropagation();
+    // });
   });
 });
 
@@ -109,8 +127,10 @@ function updateTimer() {
   let seconds = ("00" + (timeInSecond % 60)).substr(-2);
 
   if (document.getElementById("timer").checked) {
-    if (timeInSecond >= 0) {
+    if (timeInSecond > 0) {
       timeInSecond--;
+    } else {
+      endGame();
     }
   } else {
     timeInSecond++;
@@ -226,7 +246,7 @@ function getAdjacentCells(div) {
 function cellClick(div) {
   if (div.classList.contains("bomb")) {
     // 1. show bomb
-    div.innerHTML = "<i class='fa-solid fa-bomb fa-2x'></i>";
+    div.innerHTML = "<i class='fa-solid fa-bomb'></i>";
     div.style.backgroundColor = "red";
     // 2. end game --> reveal all cells, disable all cell click events
     div.dataset.status = "revealed";
@@ -251,8 +271,10 @@ function cellClick(div) {
       }
     } else {
       div.innerHTML = surroundingBombs;
+      div.style.color = numberColor[surroundingBombs];
     }
   }
+  checkWin();
 }
 
 function repeatCellClick(div) {
@@ -263,15 +285,32 @@ function repeatCellClick(div) {
 // 4. Add event listener function
 // (b) cellFlag
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// right click to flag cell
+// if empty --> place flag in cell --> add flagged class to classlist --> change data-status to flagged --> decrease bombcount
+// if not empty --> empty content --> remove flagged class --> revert data-status to hidden --> increment bombcount
+
 function cellFlag(e) {
   e.preventDefault();
-  const targetDiv = e.target;
-  // add flag icon into flagged div
-  targetDiv.innerHTML = "<i class='fa-solid fa-flag fa-2x'></i>";
-  targetDiv.dataset.status = "flagged";
-  // decrement bombcount by number of flags established
-  let newBombCount = parseInt(bombCount.innerHTML) - 1;
-  bombCount.innerHTML = ("000" + newBombCount).substr(-3);
+  let targetDiv = e.target;
+  // console.log({ targetDiv });
+
+  if (targetDiv.tagName === "DIV" && targetDiv.childNodes.length === 0) {
+    // add flag icon into flagged div
+    targetDiv.innerHTML = "<i class='fa-solid fa-flag'></i>";
+    targetDiv.classList.add("flagged");
+    targetDiv.dataset.status = "flagged";
+    // decrement bombcount by number of flags established
+    let newBombCount = parseInt(bombCount.innerHTML) - 1;
+    bombCount.innerHTML = ("000" + newBombCount).substr(-3);
+  } else {
+    targetDiv.parentNode.classList.remove("flagged");
+    targetDiv.parentNode.dataset.status = "hidden";
+    targetDiv.remove();
+    let newBombCount = parseInt(bombCount.innerHTML) + 1;
+    bombCount.innerHTML = ("000" + newBombCount).substr(-3);
+  }
+  checkWin();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,17 +324,20 @@ function endGame(div) {
   const hiddenCells = document.querySelectorAll("[data-status='hidden']");
   for (let cell of hiddenCells) {
     if (cell.classList.contains("bomb")) {
-      cell.innerHTML = "<i class='fa-solid fa-bomb fa-2x'></i>";
-      cell.style.backgroundColor = "orange";
+      revealBomb(cell);
     }
     cell.style["pointer-events"] = "none";
   }
-  // 3. disable all cell click event
 
-  // 4. stop timer
   stopTimer();
-  // 5. Enable start game button
   startGame.disabled = false;
+}
+
+function revealBomb(cell) {
+  if (cell.innerHTML === "") {
+    cell.innerHTML = "<i class='fa-solid fa-bomb'></i>";
+  }
+  cell.style.backgroundColor = "orange";
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,4 +345,42 @@ function endGame(div) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function stopTimer() {
   clearInterval(gameInterval);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 7. Check win
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function checkWin() {
+  const flaggedCells = JSON.stringify(
+    document.querySelectorAll("[data-status='flagged']")
+  );
+  const bombCells = JSON.stringify(document.querySelectorAll(".bomb"));
+
+  // win logic
+  if (
+    document.querySelectorAll("[data-status = 'flagged'].bomb").length ===
+    numOfBomb
+  ) {
+    winAction();
+  }
+}
+
+function winAction() {
+  stopTimer();
+  rainConfetti();
+  startGame.disabled = false;
+  document.getElementById("timer").disabled = false;
+  for (let cell of document.querySelectorAll(".bomb")) {
+    revealBomb(cell);
+  }
+
+  // reveal all bomb locations
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Confetti Anime
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const jsConfetti = new JSConfetti();
+function rainConfetti() {
+  jsConfetti.addConfetti({ confettiNumber: 1000 });
 }
