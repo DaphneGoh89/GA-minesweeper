@@ -45,7 +45,10 @@
 }
 
 body {
+  height: 100%;
   background-image: linear-gradient(180deg, black, lightslategray);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   font-family: "Press Start 2P", helvetica, sans-serif;
   animation: transitionIn 1s;
 }
@@ -403,3 +406,29 @@ input[type="radio"]:checked {
 }
 
 /************************************************* Media Queries *************************************************/
+@media only screen and (max-width: 1500px) {
+  .container {
+    /* background-color: lightblue; */
+    grid-template-columns: 20% 80%;
+  }
+
+  legend,
+  label {
+    font-size: small;
+  }
+
+  .game-button {
+    font-size: smaller;
+  }
+
+  .header {
+    height: 13vh;
+    line-height: 13vh;
+
+    /* padding-left: 50px; */
+    align-content: center;
+    font-size: x-large;
+    text-shadow: 4px 4px lightslategrey;
+    letter-spacing: 0.08em;
+  }
+}
