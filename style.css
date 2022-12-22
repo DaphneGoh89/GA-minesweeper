@@ -8,11 +8,21 @@
 @keyframes transitionIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-50px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes headerAnime {
+  from {
+    transform: translateX(-650px);
+  }
+
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -28,16 +38,16 @@
 :root {
   --border-dark-color: lightsteelblue;
   --border-light-color: aliceblue;
+  --start-game-button-color: rgba(66, 172, 30, 0.75); /*#ce9f11;*/
+  --start-game-button-glow: rgba(66, 228, 57, 0.75); /*#ffc000;*/
+  --toggle-disabled-before-el: lightgray;
+  --toggle-disabled-after-el: white;
 }
 
 body {
   background-image: linear-gradient(180deg, black, lightslategray);
   font-family: "Press Start 2P", helvetica, sans-serif;
   animation: transitionIn 1s;
-}
-
-iframe {
-  border-style: none;
 }
 
 .fa-flag {
@@ -53,16 +63,32 @@ iframe {
 fieldset {
   padding: 20px auto;
   border-radius: 0.5em;
+  border-color: /*lightgreen;*/ var(--start-game-button-color);
+  border-width: 2px;
+  box-shadow: 0 0 5px var(--start-game-button-glow);
+  letter-spacing: 0.1em;
 }
 
 legend {
   text-align: center;
-  font-size: smaller;
+  font-size: larger;
+  letter-spacing: 0.2em;
+  color: var(--start-game-button-color);
 }
 
 label {
   margin-top: 5px;
   margin-bottom: 10px;
+}
+
+label:hover {
+  color: var(--start-game-button-color);
+  text-shadow: 0 0 1px var(--start-game-button-glow);
+}
+
+input[type="radio"]:checked + label {
+  color: var(--start-game-button-color);
+  text-shadow: 0 0 1px var(--start-game-button-glow);
 }
 
 /********************************************* TOGGLE **********************************************/
@@ -87,22 +113,20 @@ input[type="checkbox"].toggle + label {
   /* added such that the label text will be centered vertically */
   align-items: center;
   position: relative;
-  /* margin-top: 5px;
-  margin-bottom: 10px; */
 }
 
 input[type="checkbox"].toggle + label::before {
   content: "";
   width: 4em;
   height: 2em;
-  background-color: lightgray;
+  background-color: var(--toggle-disabled-before-el);
   border-radius: 1em;
   margin-right: 0.7em;
   transition: 400ms ease-in-out;
 }
 
 input[type="checkbox"].toggle:checked + label::before {
-  background-color: hsl(100, 70%, 90%);
+  background-color: hsl(51, 70%, 85%);
 }
 
 /* round toggle - before the checkbox is checked */
@@ -110,7 +134,7 @@ input[type="checkbox"].toggle + label::after {
   content: "";
   width: 1.9em;
   height: 1.9em;
-  background-color: white;
+  background-color: var(--toggle-disabled-after-el);
   border-radius: 1em;
   margin-right: 0.25em;
   position: absolute;
@@ -120,7 +144,7 @@ input[type="checkbox"].toggle + label::after {
 
 input[type="checkbox"].toggle:checked + label::after {
   transform: translateX(100%);
-  background-color: green;
+  background-color: var(--start-game-button-color);
 }
 
 /************************************************** HEADER **************************************************/
@@ -128,16 +152,21 @@ input[type="checkbox"].toggle:checked + label::after {
   height: 15vh;
   line-height: 15vh;
   text-align: center;
-
+  /* padding-left: 50px; */
   align-content: center;
   font-family: "Press Start 2P";
   font-size: xx-large;
-  text-shadow: 5px 5px lightslategrey;
+  text-shadow: 6px 6px lightslategrey;
+  letter-spacing: 0.08em;
   color: azure;
+  animation: headerAnime 1s;
+  cursor: pointer;
 }
 
 .header .fa-flag-checkered {
   color: red;
+  text-shadow: 8px 8px lightslategray;
+  transform: rotate(-10deg);
 }
 
 /************************************************** BODY *****************************************************/
@@ -172,94 +201,32 @@ input[type="checkbox"].toggle:checked + label::after {
   padding: 10px;
 }
 
-/* input[type="radio"] {
-  display: none;
-} */
-
 input[type="radio"].difficulty + label {
   cursor: pointer;
   width: 100%;
-  border: 1px solid green;
+  font-weight: bolder;
 }
 
 input[type="radio"]:checked {
-  color: blue;
+  accent-color: var(--start-game-button-color);
 }
 
-/*=============== GAME PARAMETER:: Timer Slider ================*/
+/*=============== GAME PARAMETER:: Timer ================*/
 .set-timer {
   padding: 20px auto;
   margin-bottom: 10px;
-  /* background-color: grey; */
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #2196f3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50px;
+  font-weight: bolder;
 }
 
 /*=============== GAME PARAMETER:: Start Game Button ================*/
 .game-button {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 15px;
   padding: 10px 20px;
   font-family: "Press Start 2P", sans-serif;
   font-weight: 900;
-  background-color: lightgray;
+  letter-spacing: 0.1em;
+  background-color: gray;
   border-style: outset;
   border-width: 4px;
   border-top-color: var(--border-light-color);
@@ -268,14 +235,32 @@ input:checked + .slider:before {
   border-bottom-color: var(--border-dark-color);
   border-radius: 1em;
   cursor: pointer;
-  transition: 0.4s ease-in-out;
+  transition: 0.2s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.game-button:hover {
+  background-color: lightgray;
+  box-shadow: 0 0 5px lightgray, 0 0 20px lightgray, 0 0 60px lightgray;
+}
+
 .game-button i {
   margin-right: 20px;
+}
+
+#start-game {
+  margin-top: 35px;
+  color: azure;
+  background-color: var(--start-game-button-color);
+}
+
+#start-game:hover {
+  background-color: var(--start-game-button-glow);
+  box-shadow: 0 0 5px var(--start-game-button-glow),
+    0 0 20px var(--start-game-button-glow),
+    0 0 60px var(--start-game-button-glow);
 }
 
 /************************************************* GAME AREA *************************************************/
@@ -290,10 +275,8 @@ input:checked + .slider:before {
 
 /*=============== GAME AREA:: TRACKER ================*/
 .game-area {
-  /* width: 70%; */
   width: 466px;
   background-color: lightsteelblue;
-  /* border: inset; */
   border-style: outset;
   border-width: 8px;
   border-top-color: var(--border-light-color);
@@ -333,7 +316,6 @@ input:checked + .slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* text-shadow: -1px -1px lightslategray; */
   width: 100%;
   height: 100%;
 }
@@ -356,7 +338,6 @@ input:checked + .slider:before {
 
 /*=============== GAME AREA:: BOARD ================*/
 .board {
-  /* width: 70%; */
   margin: 0 10px 20px 10px;
   background-color: var(--border-dark-color);
   border: inset;
@@ -366,10 +347,6 @@ input:checked + .slider:before {
   border-right-color: var(--border-light-color);
   border-bottom-color: var(--border-light-color);
   font-size: xx-small;
-  /* display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap; */
 }
 
 .row {
@@ -424,3 +401,5 @@ input:checked + .slider:before {
   width: 25px;
   height: 20px;
 }
+
+/************************************************* Media Queries *************************************************/

@@ -1,5 +1,4 @@
 //import JSConfetti from "js-confetti";
-
 const JSConfetti = window.JSConfetti;
 
 // game constants
@@ -19,7 +18,7 @@ const gameDifficulty = {
     boardWidth: "450px",
     cellWidth: "30px",
     borderWidth: "3px",
-    timeInSecond: 179, // time in seconds
+    timeInSecond: 179,
   },
   medium: {
     row: 16,
@@ -73,14 +72,40 @@ let gameInterval;
 
 // start game
 window.addEventListener("DOMContentLoaded", () => {
-  // listen to start game button
+  // 1. set game parameters based on localStorage
+  if (localStorage.getItem("difficultyLevel")) {
+    document.getElementById(
+      `${localStorage.getItem("difficultyLevel")}`
+    ).checked = true;
+  } else {
+    document.getElementById("easy").checked = true;
+  }
+
+  if (localStorage.getItem("timer")) {
+    document.getElementById("timer").checked = parseInt(
+      localStorage.getItem("timer")
+    );
+  } else {
+    document.getElementById("timer").checked = 1;
+  }
+
+  // 2. listen to start game button
   startGame.addEventListener("click", (e) => {
     e.preventDefault();
 
-    // get game parameters: difficulty level and timer setup
-    const difficulty = document.querySelector(
-      "input[name='difficulty']:checked"
-    ).value;
+    // i. setting localStorage
+    window.localStorage.setItem(
+      "difficultyLevel",
+      document.querySelector("input[name='difficulty']:checked").value
+    );
+
+    window.localStorage.setItem(
+      "timer",
+      document.getElementById("timer").checked ? 1 : 0
+    );
+
+    // ii. get all game-relevant parameters for game-setup
+    let difficulty = localStorage.getItem("difficultyLevel");
 
     rowNum = gameDifficulty[difficulty].row;
     colNum = gameDifficulty[difficulty].col;
@@ -99,7 +124,7 @@ window.addEventListener("DOMContentLoaded", () => {
     board.innerHTML = "";
     smiley.innerHTML = "<i class='fa-regular fa-face-smile fa-2x'></i>";
 
-    // game setup
+    // game setup: update timer/ bomb count/ game array/ game board
     gameInterval = setInterval(updateTimer, 1000);
     bombCount.innerHTML = ("000" + numOfBomb).substr(-3);
     const gameArray = createGameArray();
@@ -108,12 +133,13 @@ window.addEventListener("DOMContentLoaded", () => {
     // disable change in game parameters
     startGame.disabled = true;
     document.getElementById("timer").disabled = true;
+    document
+      .getElementById("timer")
+      .style.setProperty("--toggle-disabled-before-el", "lightgray");
+    document
+      .getElementById("timer")
+      .style.setProperty("--toggle-disabled-after-el", "white");
     document.getElementsByName("difficulty").disabled = true;
-
-    // pauseGame.addEventListener("click", (e) => {
-    //   stopTimer();
-    //   //e.stopPropagation();
-    // });
   });
 });
 
@@ -286,24 +312,22 @@ function repeatCellClick(div) {
 // (b) cellFlag
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// right click to flag cell
-// if empty --> place flag in cell --> add flagged class to classlist --> change data-status to flagged --> decrease bombcount
-// if not empty --> empty content --> remove flagged class --> revert data-status to hidden --> increment bombcount
-
 function cellFlag(e) {
   e.preventDefault();
   let targetDiv = e.target;
-  // console.log({ targetDiv });
 
-  if (targetDiv.tagName === "DIV" && targetDiv.childNodes.length === 0) {
-    // add flag icon into flagged div
+  if (
+    targetDiv.tagName === "DIV" &&
+    targetDiv.childNodes.length === 0 &&
+    targetDiv.dataset.status !== "revealed" // to prevent insertion of flags into a cell that has been revealed
+  ) {
     targetDiv.innerHTML = "<i class='fa-solid fa-flag'></i>";
     targetDiv.classList.add("flagged");
     targetDiv.dataset.status = "flagged";
-    // decrement bombcount by number of flags established
     let newBombCount = parseInt(bombCount.innerHTML) - 1;
     bombCount.innerHTML = ("000" + newBombCount).substr(-3);
-  } else {
+  } else if (targetDiv.tagName === "I") {
+    // to reinstate a flagged cell to hidden status
     targetDiv.parentNode.classList.remove("flagged");
     targetDiv.parentNode.dataset.status = "hidden";
     targetDiv.remove();
@@ -328,11 +352,20 @@ function endGame(div) {
     }
     cell.style["pointer-events"] = "none";
   }
+  // 3. loop through flagged cells and reveal bombs and disable click
+  const flaggedCells = document.querySelectorAll("[data-status='flagged']");
+  for (let flagged of flaggedCells) {
+    if (flagged.classList.contains("bomb")) {
+      revealBomb(flagged);
+    }
+    flagged.style["pointer-events"] = "none";
+  }
 
   stopTimer();
   startGame.disabled = false;
 }
 
+// reveal bombs
 function revealBomb(cell) {
   if (cell.innerHTML === "") {
     cell.innerHTML = "<i class='fa-solid fa-bomb'></i>";
@@ -351,12 +384,6 @@ function stopTimer() {
 // 7. Check win
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function checkWin() {
-  const flaggedCells = JSON.stringify(
-    document.querySelectorAll("[data-status='flagged']")
-  );
-  const bombCells = JSON.stringify(document.querySelectorAll(".bomb"));
-
-  // win logic
   if (
     document.querySelectorAll("[data-status = 'flagged'].bomb").length ===
     numOfBomb
